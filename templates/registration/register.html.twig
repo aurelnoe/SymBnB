@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+<div class="container w-50 border round p-4">
+    {% for flashError in app.flashes('verify_email_error') %}
+        <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+    {% endfor %}
+
+    <h1 class="text-center">Inscription</h1>
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div class="text-center">    
+            <button type="submit" class="btn btn-lg btn-primary w-50">Inscription</button>
+        </div>
+
+    {{ form_end(form) }}
+
+</div>
+
+{% endblock %}

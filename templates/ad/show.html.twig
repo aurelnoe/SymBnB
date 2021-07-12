@@ -1,0 +1,154 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ ad.title }}{% endblock %}
+
+{% block body %}
+<div class="ad-title" style="background-image: url({{ ad.coverImage }})">
+    <div class="container">
+        <h1>{{ ad.title }}</h1>
+        <p>{{ ad.introduction }}</p>
+        <p class="h2">
+            <strong>{{ ad.room }} chambres</strong> pour <strong>{{ ad.price }}&euro;
+            </strong> par nuit.
+        </p>
+        <a href="{{ path('booking_create', {'slug': ad.slug}) }}" 
+            class="btn btn-primary">Reserver !</a>
+
+        {% if app.user and app.user == ad.author %}
+            <a href="{{ path('ad_edit', {'id': ad.id}) }}" class="btn btn-secondary">
+                Modifier l'annonce
+            </a>
+            {{ include('ad/_delete_form.html.twig') }}
+            {# <a href="{{ path('ad_delete', {'id': ad.id}) }}" class="btn btn-danger"
+                onclick="return confirm(`êtes vous sure de vouloir supprimer l'annonce {{ ad.title }}?`)">
+                Supprimer l'annonce
+            </a> #}
+        {% endif %}
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mb-3">
+            {{ ad.description | raw }}
+
+            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                {% for image in ad.images %}
+                    <li data-target="#carouselExampleIndicators" data-slide-to="{{ loop.index0 }}" 
+                    {% if loop.first %} class="active"{% endif %}></li>
+                {% endfor %}
+                </ol>
+                <div class="carousel-inner">
+                
+                {% for image in ad.images %} 
+                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+                        <img src="{{ image.url }}" class="d-block w-100" alt="First Slide">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>{{ ad.title }}</h5>
+                            <p>{{ image.caption }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+                <a class="carousel-control-prev" role="button" href="#carouselExampleIndicators"  data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </a>
+                <a class="carousel-control-next" role="button" href="#carouselExampleIndicators"  data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </a>
+            </div>
+        {% if ad.comments|length > 0 %}
+            <h2 class="mb-3">Commentaires de nos voyageurs :</h2>
+            <div class="alert alert-info">
+                <h4 class="alert-heading text-center">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            Note globale donné par nos vayageurs <br>
+                        </div>
+                        <div class="col">
+                            {% include "partials/rating.html.twig" with {'rating':ad.avgRatings}%}
+                            <br>
+                            <small>(Calculée sur {{ ad.comments|length }} avis !)</small>
+                        </div>
+                    </div>
+                </h4>
+            </div>
+            {% for comment in ad.comments %}
+                <div class="bg-light rounded mb-3 py-3 px-3">
+                    <strong>{{ comment.author.firstName }}</strong> a dit :
+                    <blockquote>
+                        {{ comment.content }}
+                    </blockquote>
+                    <strong>Noté donnée :</strong>
+                    {% include "partials/rating.html.twig" with {'rating':comment.rating}%}
+
+                </div>
+            {% endfor %}
+        {% else %}
+            <h2>Cette annonce n'ap pas encore de commentaires...</h2>
+        {% endif %}
+        </div>
+        <div class="col">
+        {% set a = ad.author %}
+            <div class="row mb-3 align-items-center">
+                <div class="col-4">
+                <a href="{{ path('user_show', {'id': a.id}) }}">
+                    <img src="{{ a.picture }}" class="avatar avatar-medium" alt="Avatar de {{ a.fullName }}">
+                </a>
+                </div>
+                <div class="col">
+                    <a href="{{ path('user_show', {'id': a.id}) }}">
+                        <h3>{{ a.fullName }}</h3>
+                    </a>
+                    <span class="badge badge-primary">{{ a.ads | length }} annonces</span>
+                </div>
+            </div>
+            {{ a.description | raw}}        
+        </div>
+    </div>
+</div>
+    {# <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ ad.id }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ ad.title }}</td>
+            </tr>
+            <tr>
+                <th>Slug</th>
+                <td>{{ ad.slug }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>{{ ad.price }}</td>
+            </tr>
+            <tr>
+                <th>Introduction</th>
+                <td>{{ ad.introduction }}</td>
+            </tr>
+            <tr>
+                <th>Decription</th>
+                <td>{{ ad.decription }}</td>
+            </tr>
+            <tr>
+                <th>CoverImage</th>
+                <td>{{ ad.coverImage }}</td>
+            </tr>
+            <tr>
+                <th>Room</th>
+                <td>{{ ad.room }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('ad_index') }}">back to list</a>
+
+    <a href="{{ path('ad_edit', {'id': ad.id}) }}">edit</a>
+
+    {{ include('ad/_delete_form.html.twig') }} #}
+{% endblock %}
